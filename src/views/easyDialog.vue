@@ -2,6 +2,7 @@
   <div>
       <el-button type="primary" @click="dialogValue.delete = true">打开弹窗</el-button>
     <EasyDialog :schema="schema" :dialogValue="dialogValue" editMode="edit"></EasyDialog>
+    <!-- 这是git测试 -->
   </div>
 </template>
 
