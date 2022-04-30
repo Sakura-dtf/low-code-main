@@ -1,31 +1,42 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Test from '../views/test.vue'
-import tableTest from '../views/tableTest.vue'
-import dialogTest from '../views/easyDialog.vue'
-Vue.use(VueRouter)
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Home from "../views/Home.vue";
+import Login from "../views/Login.vue";
+import Test from "../views/test.vue";
+import tableTest from "../views/tableTest.vue";
+import dialogTest from "../views/easyDialog.vue";
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "/",
+    redirect: "/login",
   },
   {
-    path: "/test",
-    name: "test",
-    component: tableTest
+    path: "/login",
+    component: Login,
   },
   {
-    path: "/testDialog",
-    name: "dialog",
-    component: dialogTest
-  }
-]
+    path: "/home",
+    component: Home,
+  },
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  const token = window.localStorage.getItem("token");
+  if (token) {
+    next();
+  } else {
+    if (to.path === "/login") {
+      next();
+    } else {
+      next("/login");
+    }
+  }
+});
+
+export default router;

@@ -19,6 +19,7 @@
       <el-button size="mini" @click="undo">撤销</el-button>
       <el-button size="mini" @click="redo">重做</el-button>
       <el-button size="mini" @click="save">保存</el-button>
+      <el-button size="mini" @click="exit">登出</el-button>
     </div>
 
     <Preview v-model="isShowPreview" @change="handlePreviewChange" />
@@ -42,6 +43,7 @@
 import Preview from "@/components/Preview/Preview.vue";
 import { mapState } from "vuex";
 import indexID from "@/utils/indexId.js";
+import { saveWebConfig } from "@/api/http.js";
 
 export default {
   data() {
@@ -82,6 +84,9 @@ export default {
     handlePreviewChange() {
       this.$store.commit("setEditMode", "edit");
     },
+    exit()  {
+
+    },
     deleteCur() {
       if (this.curButton || this.curComponent || this.curTableHeader) {
         this.$store.commit("deleteCurComponent");
@@ -98,16 +103,11 @@ export default {
 
       this.$refs["saveForm"].validate(async (valid) => {
         if (valid) {
-          const { data: res } = await this.$http.post(
-            "http://localhost:4000/saveConfig",
-            {
-              lowCodeData: this.lowCodeData,
-              index,
-              label: this.saveForm.label,
-            }
-          );
-          console.log(res);
-
+          const { data: res } = await saveWebConfig({
+            lowCodeData: this.lowCodeData,
+            index,
+            label: this.saveForm.label,
+          });
           this.saveVisible = false;
         } else {
           return false;

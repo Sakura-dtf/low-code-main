@@ -4,7 +4,7 @@
     <div class="canvas-container">
       <div class="canvas" style="width: 1200px; height: 700px; padding: 30px; margin-top: 100px;">
         <el-form-schema
-          :schema="efsSchema"
+          :schema="JSON.parse(JSON.stringify(efsSchema))"
           v-model="copyFormValue"
           editMode="preview"
           ref="previewEfs"
@@ -169,3 +169,4 @@ export default {
   padding: 0 15px;
 }
 </style>
+

@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@kummy/el-form-schema": "^1.2.6",
-    "axios": "^0.25.0",
+    "axios": "^0.27.1",
     "core-js": "^3.6.5",
     "element-ui": "^2.4.5",
     "mockjs": "^1.1.0",
