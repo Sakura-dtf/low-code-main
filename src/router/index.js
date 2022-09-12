@@ -5,6 +5,7 @@ import Login from "../views/Login.vue";
 import Test from "../views/test.vue";
 import tableTest from "../views/tableTest.vue";
 import dialogTest from "../views/easyDialog.vue";
+import dictKey from "../views/dictKey.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -19,6 +20,10 @@ const routes = [
   {
     path: "/home",
     component: Home,
+  },
+  {
+    path: "/dict",
+    component: dictKey,
   },
 ];
 

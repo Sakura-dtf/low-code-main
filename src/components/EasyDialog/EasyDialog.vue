@@ -177,6 +177,8 @@ export default {
                     "inline",
                     "default",
                     "labelWidth",
+                    "watchField",
+                    "url"
                   ];
                   const props = [
                     "disabled",
@@ -225,7 +227,7 @@ export default {
                           if (item[key]) {
                             schema[item.field][key] = item[key];
                           } else {
-                            debugger;
+                            // debugger;
                             if (!this.$store.state.dialogEfsValue[field]) {
                               this.$store.state.dialogEfsValue[field] = {};
                             }

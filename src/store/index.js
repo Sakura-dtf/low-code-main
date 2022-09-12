@@ -61,7 +61,7 @@ export default new Vuex.Store({
     onSizeChange: `function submit(Size) {
       console.log(Size);
     }`,
-
+    uuid: 0,
     dialogData: [],
     dialogValue: {},
 
@@ -74,6 +74,7 @@ export default new Vuex.Store({
 
     curIsDialog: false,
     curDialogField: "",
+    curLowCodeId: "",
 
     snapShotIndex: {
       efs: -1,
@@ -594,13 +595,76 @@ export default new Vuex.Store({
         }
       }
     },
+    setLowCodeId(state, id) {
+      state.curLowCodeId = id;
+      state.uuid++;
+    },
+    setLowCode(state, lowCodeData) {
+      let {
+        componentData,
+        efsSchema,
+        formValue,
+        efsConfig,
+        buttonData,
+        tableData,
+        tableSchema,
+        pageOption,
+        dialogValue,
+        dialogData,
+        dialogEfsSchema,
+        dialogEfsValue,
+        dialogTableColums,
+        dialogComponentData,
+        uuid,
+      } = lowCodeData;
+
+      // state.efsSchema = JSON.parse(efsSchema);
+      state.formValue = JSON.parse(formValue);
+      state.efsConfig = JSON.parse(efsConfig);
+      state.componentData = JSON.parse(componentData);
+
+      state.buttonData = JSON.parse(buttonData);
+      state.tableData = JSON.parse(tableData);
+      state.tableSchema = JSON.parse(tableSchema);
+      state.pageOption = JSON.parse(pageOption);
+      state.dialogValue = JSON.parse(dialogValue);
+      state.dialogData = JSON.parse(dialogData);
+      state.dialogEfsSchema = JSON.parse(dialogEfsSchema);
+      state.dialogEfsValue = JSON.parse(dialogEfsValue);
+      state.dialogTableColums = JSON.parse(dialogTableColums);
+      state.dialogComponentData = JSON.parse(dialogComponentData);
+      state.uuid = uuid;
+      let { shouldSubmit, expandNumber, inline, size, onSubmit } =
+        state.efsConfig;
+      let { pageSize, pageSizes, pageTotal, pageCurpage, onSizeChange } =
+        state.pageOption;
+      console.log(state.efsConfig, state.pageOption);
+      state.shouldSubmit = shouldSubmit;
+      state.expandNumber = expandNumber;
+      state.inline = inline;
+      state.size = size;
+      state.onSubmit = onSubmit;
+
+      state.pageSize = pageSize;
+      state.pageSizes = pageSizes;
+      state.pageTotal = pageTotal;
+      state.pageCurpage = pageCurpage;
+      state.onSizeChange = onSizeChange;
+    },
   },
   getters: {
     lowCodeData: (state) => {
       return {
         componentData: JSON.stringify(state.componentData),
         efsSchema: JSON.stringify(state.efsSchema),
-        formValue: JSON.stringify(state.formValue),
+        formValue: JSON.stringify(state.formValue, function (k, v) {
+          if (v === undefined) {
+            return "";
+          } else {
+            return v;
+          }
+        }),
+        uuid: state.uuid,
         efsConfig: JSON.stringify({
           shouldSubmit: state.shouldSubmit,
           expandNumber: state.expandNumber,
@@ -623,6 +687,7 @@ export default new Vuex.Store({
         dialogEfsSchema: JSON.stringify(state.dialogEfsSchema),
         dialogEfsValue: JSON.stringify(state.dialogEfsValue),
         dialogTableColums: JSON.stringify(state.dialogTableColums),
+        dialogComponentData: JSON.stringify(state.dialogComponentData),
       };
     },
   },

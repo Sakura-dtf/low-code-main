@@ -35,7 +35,7 @@
             <img
               class="captcha-img"
               ref="captchaImg"
-              src="http://localhost:4000/user/getCode"
+              src="http://lowcodeback.dtfei.cn/user/getCode"
               @click="changeCaptcha"
             />
           </el-form-item>
@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     changeCaptcha(e) {
-      e.target.src = `http://localhost:4000/user/getCode?${Math.random()}`;
+      e.target.src = `http://lowcodeback.dtfei.cn/user/getCode?${Math.random()}`;
     },
     submit() {
       this.$refs["loginForm"].validate(async (valid) => {
@@ -86,7 +86,7 @@ export default {
         if (data.errno === 1005) {
           this.$refs["loginForm"].fields[2].validateMessage = "验证码错误";
           this.$refs["loginForm"].fields[2].validateState = "error";
-          this.$refs["captchaImg"].src = `http://localhost:4000/user/getCode?${Math.random()}`;
+          this.$refs["captchaImg"].src = `http://lowcodeback.dtfei.cn/user/getCode?${Math.random()}`;
         } else if(data.errno === 1003) {
           this.$message.error("登录失败，请查看用户名或者密码是否正确");
         } else if(data.errno === 0) {

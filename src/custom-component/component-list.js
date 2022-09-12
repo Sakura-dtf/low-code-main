@@ -55,6 +55,8 @@ const formList = [
     name: "选择框",
     itemsValue: "",
     default: "1",
+    url: "",
+    watchField: "",
     labelWidth: "100px",
     inline: true,
     required: "false",
@@ -617,4 +619,19 @@ const formList = [
   },
 ];
 
+
+const a = {
+  input: {
+    tag: "el-input",
+    label: "选择框",
+  },
+  select: {
+    tag: "el-select",
+    label: "选择框"
+  }
+}
+
+
 export default formList;
+
+

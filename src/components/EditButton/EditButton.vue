@@ -54,8 +54,7 @@ export default {
   },
   methods: {
     handleClick(e, field) {
-      console.log(1111111);
-      //  debugger;
+
       let copyComponent = {};
 
       this.buttonData.forEach((component) => {

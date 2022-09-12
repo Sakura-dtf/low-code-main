@@ -19,6 +19,7 @@ const btnList = [
       circle: false,
       disabled: "false",
       icon: "el-icon-edit",
+      auth: "",
     },
   },
 ];

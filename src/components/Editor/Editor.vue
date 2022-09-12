@@ -145,6 +145,8 @@ export default {
               "inline",
               "default",
               "labelWidth",
+              "watchField",
+              "url"
             ];
             const props = [
               "disabled",
@@ -169,6 +171,7 @@ export default {
               "collapse-tags",
               "checkStrictly",
               "options",
+              "auth",
             ];
             const attrs = ["maxlength", "minLength", "readonly", "rows"];
 
@@ -422,9 +425,7 @@ export default {
     handleFormDrop(e) {
       e.preventDefault();
       e.stopPropagation();
-
       const id = Number(e.dataTransfer.getData("id"));
-
       if (id <= 15) {
         let component;
         formList.forEach((item) => {
@@ -452,8 +453,8 @@ export default {
     handleBtnDrop(e) {
       e.preventDefault();
       e.stopPropagation();
-      const id = Number(e.dataTransfer.getData("id"));
-
+      const id = Number(e.dataTransfer.getData("id"));  
+      //获取 e.dataTransfer的数据
       if (id > 15 && id < 17) {
         let component;
         btnList.forEach((item) => {
@@ -464,7 +465,7 @@ export default {
 
         component.field = generateID();
 
-        this.$store.commit("addBtnComponent", { component });
+        this.$store.commit("addBtnComponent", { component }); // 将数据保存到vuex中
       }
     },
     handleBtnDragOver(e) {

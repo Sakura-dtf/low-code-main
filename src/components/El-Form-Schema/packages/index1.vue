@@ -1,5 +1,12 @@
-<script>
 
+
+
+
+
+
+
+
+<script>
 import { Component } from "./components/index";
 import {
   getObjectByPath,
@@ -135,6 +142,7 @@ export default {
       validiteFieldSet: new Set(),
       enterFormValues: {},
       formValues: {},
+      copySchema: {},
     };
   },
   computed: {
@@ -165,6 +173,7 @@ export default {
     schema: {
       handler(val) {
         if (!this.isWatching && Object.keys(val).length) {
+          this.copySchema = this.schema;
           this.initSchemas();
         } else {
           this.isWatching = false;
@@ -231,15 +240,13 @@ export default {
      */
     initSchemas() {
       const values = {};
-
-      const lastKey = Object.keys(this.schema).pop();
-      for (const key in this.schema) {
-        this.schema[key].$isLast = lastKey === key;
-        const schemaComponent = this.schema[key];
+      const lastKey = Object.keys(this.copySchema).pop();
+      for (const key in this.copySchema) {
+        this.copySchema[key].$isLast = lastKey === key;
+        const schemaComponent = this.copySchema[key];
         this.initComponentList(schemaComponent);
         this.setSchemaFields(values, key, schemaComponent);
       }
-
       const customData = Object.keys(this.model).reduce((prev, key) => {
         if (!(key in values)) prev[key] = this.model[key];
         return prev;
@@ -368,7 +375,7 @@ export default {
         case "h1":
         case "h2":
         case "h3":
-        case "h4":          // 分别对每个组件的某些元素进行分析
+        case "h4":
         case "h5":
         case "div":
         case "span":
@@ -603,19 +610,19 @@ export default {
      * @description: 通过 schema 定义渲染 el-form-item
      */
     renderFormItems(h) {
-      return Object.keys(this.schema).map((key, index) => {
+      return Object.keys(this.copySchema).map((key, index) => {
         // key当作name来处理
-        this.schema[key].name = key;
+        this.copySchema[key].name = key;
         // 是否展开/收起
-        this.schema[key].expand =
+        this.copySchema[key].expand =
           this.expandNumber > 0 ? index < this.expandNumber : true;
 
-        if (this.schema[key].tag === "slot") {
+        if (this.copySchema[key].tag === "slot") {
           //  渲染占位slot
-          return this.$slots[this.schema[key].slot];
+          return this.$slots[this.copySchema[key].slot];
         } else {
           // 渲染formItem
-          return this.renderFormItem(h, this.schema[key], key);
+          return this.renderFormItem(h, this.copySchema[key], key);
         }
       });
     },

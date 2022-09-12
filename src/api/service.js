@@ -2,7 +2,7 @@ import axios from "axios";
 import App from "@/main.js";
 import Vue from "vue";
 const service = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: "http://lowcodeback.dtfei.cn",
   timeout: 5 * 1000, // 请求超时时间
   withCredentials: true,
 });

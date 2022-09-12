@@ -32,6 +32,7 @@
 
         <template v-if="curComponent.required !== undefined">
           <el-form-item key="required" label="required">
+            <!-- 方式一  利用开关控制 -->
             <el-switch
               v-model="requiredValue"
               :disabled="requiredExpress"
@@ -81,7 +82,7 @@
             >
             <el-button
               type="success"
-              @click="editDictionary;"
+              @click="editDictionary"
               size="mini"
               style="width: 100px"
               >字典设置</el-button
@@ -97,7 +98,7 @@
             >
             <el-button
               type="danger"
-              @click="addApi;"
+              @click="addApi"
               size="mini"
               style="width: 100px"
               >API设置</el-button
@@ -147,6 +148,13 @@
               ></el-cascader>
             </el-form-item>
             <el-form-item :key="`button_${item.name}`">
+              <el-button
+                type="primary"
+                @click="addItems"
+                size="mini"
+                style="width: 100px"
+                >修改Options</el-button
+              >
               <el-button
                 type="primary"
                 @click="addItems"
@@ -396,7 +404,11 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item :label="prop" :key="index" v-else-if="prop === 'type'">
+              <el-form-item
+                :label="prop"
+                :key="index"
+                v-else-if="prop === 'type'"
+              >
                 <el-select
                   v-model="curTableHeader.propValue.component.props[prop]"
                 >
@@ -415,7 +427,11 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item :label="prop" :key="index" v-else-if="prop === 'effect'">
+              <el-form-item
+                :label="prop"
+                :key="index"
+                v-else-if="prop === 'effect'"
+              >
                 <el-select
                   v-model="curTableHeader.propValue.component.props[prop]"
                 >
@@ -449,11 +465,7 @@
                   v-model="curTableHeader.propValue.component.props[prop]"
                 ></el-switch>
               </el-form-item>
-              <el-form-item
-                :label="prop"
-                :key="index"
-                v-else
-              >
+              <el-form-item :label="prop" :key="index" v-else>
                 <el-input
                   v-model="curTableHeader.propValue.component.props[prop]"
                 ></el-input>
@@ -493,6 +505,51 @@
           >
         </span>
       </el-dialog>
+
+      <el-dialog title="字典设计" :visible.sync="dictDialogVisible">
+        <div v-if="type === 'dict'">
+          <el-form ref="dictForm" :model="dictForm" label-width="80px">
+            <el-form-item label="value">
+              <el-select v-model="dictForm.value">
+                <el-option
+                  v-for="item in dictList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div v-if="type === 'delete' || type === 'add'">
+          <codemirror
+            ref="dictEditor"
+            :value="tempDictCode"
+            :options="cmOptions"
+            @input="onDictCodeChange"
+          />
+        </div>
+        <div v-if="type === 'url'">
+          <el-form ref="dictForm" :model="dictForm" label-width="80px">
+            <el-form-item label="组件filed">
+              <el-input
+                v-model="dictForm.field"
+                placeholder="传入参数 用空格隔开"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="url">
+              <el-input v-model="dictForm.url"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="saveDict">保存</el-button>
+          <el-button type="primary" @click="dictDialogVisible = false"
+            >关闭</el-button
+          >
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -512,9 +569,15 @@ import "codemirror/theme/base16-dark.css";
 // theme css
 import "codemirror/theme/monokai.css";
 
+import { getDictKey } from "@/api/http.js";
+
+
 export default {
   data() {
     return {
+      dictDialogVisible: false,
+      dictList: [],
+      type: "dict",
       sizeOtions: [
         { label: "large", value: "large" },
         { label: "medium", value: "medium" },
@@ -569,6 +632,12 @@ export default {
       }
       `,
       dialogVisible: false,
+      dictForm: {
+        value: "",
+        field: "",
+        url: "",
+      },
+      itemsCode: "",
     };
   },
   components: { codemirror },
@@ -592,6 +661,9 @@ export default {
         });
       }
       return res;
+    },
+    tempDictCode() {
+      return JSON.stringify(this.curComponent.items);
     },
     btnPropValue() {
       const res = [];
@@ -703,6 +775,27 @@ export default {
         this.curComponent.required = String(val);
       },
     },
+    cur() {
+      return this.curComponent;
+    },
+  },
+  async created() {
+    await this.getAllDictKey();
+  },
+  watch: { 
+    curComponent: {
+      handler(val) {
+        console.log(val)
+        if (val.url) {
+          this.dictForm.url = val.url;
+        }
+        if (val.watchField) {
+          this.dictForm.field = val.watchField;
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
     evalTemplateString(str) {
@@ -723,6 +816,38 @@ export default {
       }
       return false;
     },
+    onDictCodeChange(newCOde) {
+      this.itemsCode = newCOde;
+    },
+    saveDict() {
+      if (this.type === "dict") {
+        console.log(this.curComponent, this.dictList, this.dictForm.value);
+        let items = [];
+        this.dictList.forEach((item) => {
+          if (item.value === this.dictForm.value) {
+            item.children.forEach((i) => {
+              items.push({ label: i.label, value: i.value });
+            });
+          }
+        });
+        this.curComponent.items = items;
+        this.dictDialogVisible = false;
+      } else if (this.type === "add" || this.type === "delete") {
+        this.curComponent.items = JSON.parse(this.itemsCode);
+        this.dictDialogVisible = false;
+      } else if (this.type === "url") {
+        this.curComponent.watchField = this.dictForm.field;
+        this.curComponent.url = this.dictForm.url;
+        this.dictDialogVisible = false;
+      }
+    },
+    async getAllDictKey() {
+      const res = await getDictKey();
+      console.log(res, "res");
+      if (res.errno === 0) {
+        this.dictList = res.data.data;
+      }
+    },
     handleFocus() {
       this.$store.commit("setUpdataFlag", false);
     },
@@ -742,10 +867,22 @@ export default {
       );
       this.curComponent.field = this.curComponent.field.trim();
     },
-    addItems() {},
-    editDictionary() {},
-    removeItems() {},
-    addApi() {},
+    addItems() {
+      this.type = "add";
+      this.dictDialogVisible = true;
+    },
+    editDictionary() {
+      this.type = "dict";
+      this.dictDialogVisible = true;
+    },
+    removeItems() {
+      this.type = "add";
+      this.dictDialogVisible = true;
+    },
+    addApi() {
+      this.type = "url";
+      this.dictDialogVisible = true;
+    },
     onCmCodeChange(newCode) {
       this.tempCode = newCode;
     },
